@@ -1,49 +1,4 @@
-<?php
-/* ============ SETTINGS (server-side, visitors can NOT see this) ============ */
-$MAIL = [
-  'host' => 'smtp.gmail.com', 'port' => 465,
-  'user' => 'manishblueplanet@gmail.com',
-  'pass' => 'phentkyohhavthxn',                 // Gmail App Password (no spaces)
-  'to'   => 'parmarmanish75806@gmail.com',      // inquiries arrive here
-  'name' => 'Manish Parmar Portfolio',
-];
-/* ========================= AJAX MAIL HANDLER =============================== */
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  header('Content-Type: application/json; charset=utf-8');
-  session_start();
-  $out = function ($ok, $msg, $code = 200) { http_response_code($code); echo json_encode(['ok'=>$ok,'message'=>$msg]); exit; };
-  $in = json_decode(file_get_contents('php://input'), true); if (!is_array($in)) $in = $_POST;
-  if (!empty($in['website'])) $out(true, 'Thank you!');
-  if (!empty($_SESSION['ls']) && time() - $_SESSION['ls'] < 30) $out(false, 'Please wait a few seconds before sending another message.', 429);
-  $c = fn($s) => trim(preg_replace('/[\r\n]+/', ' ', (string)$s));
-  $name = $c($in['name'] ?? ''); $email = $c($in['email'] ?? ''); $subj = $c($in['subject'] ?? ''); $msg = trim((string)($in['message'] ?? ''));
-  if (mb_strlen($name) < 2 || mb_strlen($subj) < 3 || mb_strlen($msg) < 10 || !filter_var($email, FILTER_VALIDATE_EMAIL))
-    $out(false, 'Fill every field: a valid email and a message of 10+ characters.', 422);
-  if (mb_strlen($msg) > 5000) $out(false, 'Message is too long.', 422);
-  $body = "New website inquiry\n-------------------\nName    : $name\nEmail   : $email\nSubject : $subj\nTime    : " . date('d M Y, h:i A') . "\nIP      : " . ($_SERVER['REMOTE_ADDR'] ?? '') . "\n\nMessage:\n$msg\n";
-  $b64 = fn($s) => '=?UTF-8?B?' . base64_encode($s) . '?=';
-  $rd = function ($fp) { $d = ''; while (($l = fgets($fp, 515)) !== false) { $d .= $l; if (isset($l[3]) && $l[3] === ' ') break; } return $d; };
-  $cmd = function ($fp, $x, $ok) use ($rd) { if ($x !== null) fwrite($fp, $x . "\r\n"); $r = $rd($fp); if (strpos($r, (string)$ok) !== 0) throw new Exception(trim($r)); };
-  try {
-    $fp = stream_socket_client('ssl://' . $MAIL['host'] . ':' . $MAIL['port'], $en, $es, 15);
-    if (!$fp) throw new Exception("connect: $es");
-    stream_set_timeout($fp, 15);
-    $host = $_SERVER['SERVER_NAME'] ?? 'localhost';
-    $cmd($fp, null, 220); $cmd($fp, "EHLO $host", 250); $cmd($fp, 'AUTH LOGIN', 334);
-    $cmd($fp, base64_encode($MAIL['user']), 334); $cmd($fp, base64_encode($MAIL['pass']), 235);
-    $cmd($fp, 'MAIL FROM:<' . $MAIL['user'] . '>', 250); $cmd($fp, 'RCPT TO:<' . $MAIL['to'] . '>', 250); $cmd($fp, 'DATA', 354);
-    $h = ['Date: ' . date('r'), 'From: ' . $b64($MAIL['name']) . ' <' . $MAIL['user'] . '>', 'To: <' . $MAIL['to'] . '>',
-      'Reply-To: ' . $b64($name) . ' <' . $email . '>', 'Subject: ' . $b64('Portfolio Inquiry: ' . $subj),
-      'Message-ID: <' . bin2hex(random_bytes(8)) . "@$host>", 'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64'];
-    $cmd($fp, implode("\r\n", $h) . "\r\n\r\n" . chunk_split(base64_encode($body), 76, "\r\n") . "\r\n.", 250);
-    $cmd($fp, 'QUIT', 221); fclose($fp);
-    $_SESSION['ls'] = time();
-    $out(true, 'Thank you! Your message has been sent. I will reply soon.');
-  } catch (Throwable $e) { error_log('[contact] ' . $e->getMessage()); $out(false, 'Message could not be sent right now. Please try again later.', 500); }
-}
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$BASE = $scheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/';
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -54,8 +9,8 @@ $BASE = $scheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(dirname
 <meta property="og:type" content="website">
 <meta property="og:title" content="Manish Parmar, I build the web.">
 <meta property="og:description" content="PHP, Laravel and WordPress developer from Rajkot. See my work.">
-<meta property="og:image" content="<?= htmlspecialchars($BASE) ?>og-image.png">
-<meta property="og:url" content="<?= htmlspecialchars($BASE) ?>">
+<meta property="og:image" content="https://YOURDOMAIN.com/og-image.png">
+<meta property="og:url" content="https://YOURDOMAIN.com/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230c1635'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='800' font-size='30' text-anchor='middle' fill='%23ffd23f'%3EM%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -296,9 +251,9 @@ nav a{font:700 1.6rem var(--h);padding:14px 8px;border-radius:0;border-bottom:1p
 
 <script>
 /* ---- CONFIG: optional contact links (leave "" to hide) ---- */
-const CONFIG={email:"parmarmanish75806@gmail.com",github:"",linkedin:"",whatsapp:"919687260508"}; // inquiry WhatsApp number (country code + number)
+const CONFIG={email:"",github:"",linkedin:"",whatsapp:"919687260508"}; // inquiry WhatsApp number (country code + number)
 /* ---- PHOTO: paste your old base64 string between the quotes (data:image/jpeg;base64,...). Empty = "M" avatar ---- */
-const PHOTO="";
+const PHOTO="manish.jpg"; // apni photo same folder ma manish.jpg naam thi muko
 const AVATAR="data:image/svg+xml,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><rect width='400' height='500' fill='#cfd8ee'/><circle cx='200' cy='190' r='80' fill='#0c1635'/><path d='M60 500c0-110 60-170 140-170s140 60 140 170z' fill='#0c1635'/><text x='200' y='222' font-family='Arial' font-weight='800' font-size='90' text-anchor='middle' fill='#ffd23f'>M</text></svg>");
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const PROJECTS=[
@@ -340,7 +295,7 @@ const SERVICES=[['Custom PHP Development','Tailor-made PHP functionality'],['Lar
 const shot=u=>`https://image.thum.io/get/width/700/crop/440/noanimate/${u}`;
 const alt=u=>`https://s0.wp.com/mshots/v1/${encodeURIComponent(u)}?w=700&h=440`;
 
-$$('.me').forEach(i=>i.src=PHOTO||AVATAR);
+$$('.me').forEach(i=>{i.onerror=()=>{i.onerror=null;i.src=AVATAR};i.src=PHOTO||AVATAR});
 $('#big').innerHTML=['Manish','Parmar'].map((w,r)=>`<span class="${r?'o':''}" aria-hidden="true">${[...w].map((c,i)=>`<b style="--i:${i+r*6}">${c}</b>`).join('')}</span>`).join('');
 (function(){const R=['Laravel apps','WordPress plugins','custom themes','fast websites'],el=$('#role');let i=0,c=0,d=0;
  (function t(){const w=R[i];c+=d?-1:1;el.textContent=w.slice(0,c)||'\u00a0';let s=d?35:75;
@@ -381,29 +336,22 @@ $('#sh').addEventListener('mousedown',e=>{if(e.target.id==='sh')$('#sh').classLi
 addEventListener('keydown',e=>{if(e.key==='Escape')$('#sh').classList.remove('on')});
 $('#sCp').onclick=async()=>{try{await navigator.clipboard.writeText(url)}catch(e){$('#sUrl').select();document.execCommand('copy')}$('#sCp').textContent='Copied';setTimeout(()=>$('#sCp').textContent='Copy',1800)};
 
-/* ---- Contact form: sends mail instantly, no page reload ---- */
+/* ---- Contact form: inquiry goes to WhatsApp (no page reload, no mail) ---- */
 (function(){
  const toast=$('#toast');let tt;
  function notify(msg,err){toast.textContent=(err?'⚠ ':'✓ ')+msg;toast.classList.toggle('err',!!err);toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),5500)}
- $('#cf').addEventListener('submit',async e=>{
+ $('#cf').addEventListener('submit',e=>{
   e.preventDefault();
-  const f=e.target,btn=f.querySelector('button[type=submit]'),v=n=>f.elements[n].value.trim();
+  const f=e.target,v=n=>f.elements[n].value.trim();
+  if(f.elements.website.value)return;
   if(v('name').length<2||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))||v('subject').length<3||v('message').length<10){
    notify('Fill every field: a valid email and a message of 10+ characters.',true);return}
-  const label=btn.textContent;btn.disabled=true;btn.textContent='Sending...';
-  /* open WhatsApp tab now (inside the click) so mobile browsers do not block it */
-  let wa=null;try{wa=window.open('','_blank')}catch(_){}
-  const waText='*New Website Inquiry*\n\n*Name:* '+v('name')+'\n*Email:* '+v('email')+'\n*Subject:* '+v('subject')+'\n*Message:* '+v('message');
-  const waUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(waText);
-  try{
-   const r=await fetch(location.href.split('#')[0],{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({name:v('name'),email:v('email'),subject:v('subject'),message:v('message'),website:f.elements.website.value})});
-   const d=await r.json().catch(()=>({ok:false,message:'Server error. Please try again.'}));
-   notify(d.message,!d.ok);
-   if(d.ok){f.reset();if(wa&&!wa.closed){wa.location.href=waUrl}else{location.href=waUrl}}
-   else if(wa){wa.close()}
-  }catch(err){if(wa)wa.close();notify('Network error. Please check your connection.',true)}
-  btn.disabled=false;btn.textContent=label;
+  const text='*New Website Inquiry*\n\n*Name:* '+v('name')+'\n*Email:* '+v('email')+'\n*Subject:* '+v('subject')+'\n*Message:* '+v('message')+'\n\n_Sent from manishparmar portfolio_';
+  const url='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(text);
+  const w=window.open(url,'_blank');
+  if(!w)location.href=url;
+  notify('Opening WhatsApp... just press Send to deliver your inquiry.');
+  f.reset();
  });
 })();
 </script>
