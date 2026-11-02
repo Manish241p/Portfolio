@@ -7,19 +7,7 @@ const PHOTO="assets/img/photo.jpg";
 const FALLBACK="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Crect width='400' height='500' fill='%23cfd8ee'/%3E%3Ctext x='200' y='290' font-family='Arial' font-weight='800' font-size='180' text-anchor='middle' fill='%230c1635'%3EM%3C/text%3E%3C/svg%3E";
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const PROJECTS=[
- ['Impero Poly Films','WordPress website','https://www.imperopolyfilms.com','WordPress'],
- ['JK Pulvelizer','WordPress website','https://jkpulvelizer.com','WordPress'],
- ['HD Polyplast','WordPress website','https://hdpolyplast.co.in','WordPress'],
- ['Unisoft Rajkot','WordPress website','https://unisoftrajkot.com','WordPress'],
- ['PN Ind','WordPress website','https://pnind.infindia.net','WordPress'],
- ['Harihar','WordPress website','https://harihar.infindia.net/','WordPress'],
- ['SIPL India','WordPress website','https://siplindia.net','WordPress'],
- ['DK Food Machinery','Custom PHP website','https://dkfoodmachinery.com','PHP'],
- ['Shiv Ferrocast','Custom PHP website (demo)','https://demo.shivferrocast.com','PHP'],
- ['Shreya Sanitary Product','Custom PHP website','https://shreyasanitaryproduct.com','PHP'],
- ['Pavitra Metal Tech','Custom PHP website','https://pavitrametaltech.com','PHP'],
- ['Bharat Agro','Custom PHP website','https://bharatagro.infindia.net/','PHP'],
- ['Corporate Growth Stories','Corporate news & publishing','https://cg-stories.com/','WordPress'],
+  ['Corporate Growth Stories','Corporate news & publishing','https://cg-stories.com/','WordPress'],
  ['Blue Planet Design Studio','Creative agency website','https://blueplanet-design.com/',''],
  ['Harnex Manufacturing','Manufacturing & industrial','https://harnexmfg.com/','WordPress'],
  ['Redox Reaction','Chemical industry & products','https://redoxreaction.co.in/','WordPress'],
@@ -27,7 +15,15 @@ const PROJECTS=[
  ['Aatman Art Jewels','Jewellery & ecommerce','https://aatmanartjewels.com/',''],
  ['Kirit Traders','Trading & business','https://kirittraders.com/',''],
  ['Arisence Demo','Business website demo','https://demo.arisence.com/',''],
- ['MBK Vacutech','Business website','https://mbkvacutech.in/','WordPress']
+ ['MBK Vacutech','Business website','https://mbkvacutech.in/','WordPress'],
+ ['Impero Poly Films','WordPress website','https://www.imperopolyfilms.com','WordPress'],
+ ['HD Polyplast','WordPress website','https://hdpolyplast.co.in','WordPress'],
+ ['Unisoft Rajkot','WordPress website','https://unisoftrajkot.com','WordPress'],
+ ['DK Food Machinery','Custom PHP website','https://dkfoodmachinery.com','PHP'],
+ ['Shiv Ferrocast','Custom PHP website (demo)','https://demo.shivferrocast.com','PHP'],
+ ['Shreya Sanitary Product','Custom PHP website','https://shreyasanitaryproduct.com','PHP'],
+ ['Pavitra Metal Tech','Custom PHP website','https://pavitrametaltech.com','PHP'],
+ ['Bharat Agro','Custom PHP website','https://bharatagro.infindia.net/','PHP']
 ];
 const PLUGINS=[
  ['Custom Advertisement Manager','3.2.0','▦','Manage banner, HTML, AdSense and popup ads from the WordPress admin.',['Banner ads','AdSense','Popups','Scheduling']],
