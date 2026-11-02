@@ -30,7 +30,7 @@ section{padding:96px 0}
 .eb::before{content:"";width:26px;height:2px;border-radius:2px;background:var(--blue)}
 .sh h2{letter-spacing:-.04em}
 /* trust bar */
-.trust{padding:0}.trust .w{margin-top:-6px}
+.trust{padding:0}.trust .w{margin-top:60px}
 .tr{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:30px;padding:10px;box-shadow:var(--sh2)}
 .tr div{display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:22px;transition:.25s}
 .tr div+div{box-shadow:-1px 0 0 var(--line)}
